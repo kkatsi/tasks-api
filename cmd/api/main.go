@@ -9,13 +9,14 @@ import (
 	"rest-api/internal/routes"
 	"rest-api/internal/service"
 	"rest-api/internal/storage"
+	"rest-api/internal/utils"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
 
-	db, err := sql.Open("sqlite3", "./tasks.db")
+	db, err := sql.Open("sqlite3", "./data.db")
 	if err != nil {
 		log.Fatal("Failed to open database:", err)
 	}
@@ -26,12 +27,27 @@ func main() {
 	}
 
 	store := storage.NewSQLiteStore(db)
-	taskService := service.NewTaskService(store)
-	handler := handler.NewTaskHandler(taskService)
 
 	mux := http.NewServeMux()
 
-	routes.SetupRoutes(mux, handler)
+	mux.HandleFunc("GET /api/health", func(w http.ResponseWriter, r *http.Request) {
+		utils.JsonResponse(w, http.StatusOK, map[string]string{"status": "OK"})
+	})
+
+	//auth
+	authService := service.NewAuthService(store)
+	authHandler := handler.NewAuthHandler(authService)
+	routes.SetupAuthRoutes(mux, authHandler)
+
+	//tasks
+	taskService := service.NewTaskService(store)
+	taskHandler := handler.NewTaskHandler(taskService)
+	routes.SetupTaskRoutes(mux, taskHandler)
+
+	//users
+	userService := service.NewUserService(store)
+	userHandler := handler.NewUserHandler(userService)
+	routes.SetupUserRoutes(mux, userHandler)
 
 	// Start server
 	port := ":8080"
