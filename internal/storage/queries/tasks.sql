@@ -2,7 +2,7 @@
 SELECT * FROM tasks WHERE id = ?;
 
 -- name: GetTasks :many
-SELECT * FROM tasks ORDER BY tasks.created_at DESC;
+SELECT * FROM tasks ORDER BY tasks.created_at DESC LIMIT ? OFFSET ?;
 
 -- name: CreateTask :one
 INSERT INTO tasks (id, title, description, completed, created_at, updated_at)

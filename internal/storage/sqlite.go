@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"rest-api/internal/model"
 	"rest-api/internal/storage/db"
 	"time"
 )
@@ -61,8 +62,11 @@ func (s *SQLiteStore) Get(ctx context.Context, id string) (*db.Task, error) {
 }
 
 // GetAll implements Storage.
-func (s *SQLiteStore) GetAll(ctx context.Context) ([]db.Task, error) {
-	tasks, err := s.queries.GetTasks(ctx)
+func (s *SQLiteStore) GetAll(ctx context.Context, paginationParams model.PaginationParams) ([]db.Task, error) {
+	tasks, err := s.queries.GetTasks(ctx, db.GetTasksParams{
+		Limit:  int64(paginationParams.Limit),
+		Offset: int64(paginationParams.Offset),
+	})
 
 	if err != nil {
 		return nil, fmt.Errorf("internal server error")

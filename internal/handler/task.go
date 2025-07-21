@@ -7,6 +7,7 @@ import (
 	"rest-api/internal/model"
 	"rest-api/internal/service"
 	"rest-api/internal/utils"
+	"strconv"
 )
 
 // TaskHandler handles HTTP requests for tasks
@@ -65,7 +66,27 @@ func (h *TaskHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 func (h *TaskHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	tasks, err := h.service.GetAll(ctx)
+
+	limitStr := r.URL.Query().Get("limit")
+	offsetStr := r.URL.Query().Get("offset")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil && limitStr != "" {
+		utils.ErrorResponse(w, http.StatusBadRequest, "limit must be a valid number")
+		return
+
+	}
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil && offsetStr != "" {
+		utils.ErrorResponse(w, http.StatusBadRequest, "offset must be a valid number")
+		return
+	}
+
+	tasks, err := h.service.GetAll(ctx, model.PaginationParams{
+		Limit:  limit,
+		Offset: offset,
+	})
 
 	if err != nil {
 		handleError(w, err)

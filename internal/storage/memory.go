@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"rest-api/internal/model"
 	"rest-api/internal/storage/db"
 	"rest-api/internal/utils"
 	"sync"
@@ -56,7 +57,7 @@ func (s *MemoryStore) Get(ctx context.Context, id string) (*db.Task, error) {
 }
 
 // GetAll implements Storage.
-func (s *MemoryStore) GetAll(ctx context.Context) ([]db.Task, error) {
+func (s *MemoryStore) GetAll(ctx context.Context, paginatinonParams model.PaginationParams) ([]db.Task, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 

@@ -47,8 +47,9 @@ func (s *TaskService) Get(ctx context.Context, id string) (*db.Task, error) {
 	return s.store.Get(ctx, id)
 }
 
-func (s *TaskService) GetAll(ctx context.Context) ([]db.Task, error) {
-	return s.store.GetAll(ctx)
+func (s *TaskService) GetAll(ctx context.Context, paginationParams model.PaginationParams) ([]db.Task, error) {
+
+	return s.store.GetAll(ctx, paginationParams)
 }
 
 func (s *TaskService) Delete(ctx context.Context, id string) error {
