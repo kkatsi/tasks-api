@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,11 +9,23 @@ import (
 	"rest-api/internal/routes"
 	"rest-api/internal/service"
 	"rest-api/internal/storage"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
 
-	store := storage.NewMemoryStore()
+	db, err := sql.Open("sqlite3", "./tasks.db")
+	if err != nil {
+		log.Fatal("Failed to open database:", err)
+	}
+	defer db.Close()
+
+	if err := db.Ping(); err != nil {
+		log.Fatal("Failed to ping database:", err)
+	}
+
+	store := storage.NewSQLiteStore(db)
 	taskService := service.NewTaskService(store)
 	handler := handler.NewTaskHandler(taskService)
 

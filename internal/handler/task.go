@@ -33,13 +33,14 @@ func handleError(w http.ResponseWriter, err error) {
 }
 
 func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	var reqBody model.CreateTaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		handleError(w, err)
 		return
 	}
 
-	taskId, err := h.service.Create(reqBody)
+	taskId, err := h.service.Create(ctx, reqBody)
 
 	if err != nil {
 		handleError(w, err)
@@ -50,31 +51,34 @@ func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *TaskHandler) Get(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	taskId := r.PathValue("id")
-	task, err := h.service.Get(taskId)
+	task, err := h.service.Get(ctx, taskId)
 
 	if err != nil {
 		handleError(w, err)
 		return
 	}
 
-	utils.JsonResponse(w, http.StatusOK, task)
+	utils.JsonResponse(w, http.StatusOK, model.TaskToDTO(*task))
 }
 
 func (h *TaskHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.service.GetAll()
+	ctx := r.Context()
+	tasks, err := h.service.GetAll(ctx)
 
 	if err != nil {
 		handleError(w, err)
 		return
 	}
 
-	utils.JsonResponse(w, http.StatusOK, tasks)
+	utils.JsonResponse(w, http.StatusOK, model.TasksToListDTO(tasks))
 }
 
 func (h *TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	taskId := r.PathValue("id")
-	err := h.service.Delete(taskId)
+	err := h.service.Delete(ctx, taskId)
 
 	if err != nil {
 		handleError(w, err)
@@ -84,6 +88,7 @@ func (h *TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	taskId := r.PathValue("id")
 	var reqBody model.UpdateTaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
@@ -91,7 +96,7 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task, err := h.service.Update(taskId, &reqBody)
+	task, err := h.service.Update(ctx, taskId, &reqBody)
 
 	if err != nil {
 		handleError(w, err)

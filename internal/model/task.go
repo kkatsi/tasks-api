@@ -2,17 +2,7 @@ package model
 
 import (
 	"rest-api/internal/utils"
-	"time"
 )
-
-type Task struct {
-	Id          string    `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Completed   bool      `json:"completed"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-}
 
 type CreateTaskRequest struct {
 	Title       string `json:"title"`
@@ -23,6 +13,19 @@ type UpdateTaskRequest struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Completed   *bool  `json:"completed"`
+}
+
+type GetTaskDTO struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Completed   *bool  `json:"completed"`
+}
+
+type ListDTO[T any] struct {
+	Data  []T `json:"data"`
+	Total int `json:"total"`
+	Pages int `json:"pages"`
 }
 
 func (r *CreateTaskRequest) Validate() error {
