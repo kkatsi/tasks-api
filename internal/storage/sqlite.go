@@ -11,7 +11,7 @@ import (
 
 type SQLiteStore struct {
 	db      *sql.DB
-	queries *db.Queries // sqlc generated
+	queries *db.Queries
 }
 
 func NewSQLiteStore(database *sql.DB) Storage {
@@ -21,7 +21,6 @@ func NewSQLiteStore(database *sql.DB) Storage {
 	}
 }
 
-// Create implements Storage.
 func (s *SQLiteStore) Create(ctx context.Context, task *db.Task) (string, error) {
 	createdTask, err := s.queries.CreateTask(ctx, db.CreateTaskParams{
 		ID:          task.ID,
@@ -39,7 +38,6 @@ func (s *SQLiteStore) Create(ctx context.Context, task *db.Task) (string, error)
 	return createdTask.ID, nil
 }
 
-// Delete implements Storage.
 func (s *SQLiteStore) Delete(ctx context.Context, id string) error {
 	_, err := s.queries.DeleteTask(ctx, id)
 
@@ -50,7 +48,6 @@ func (s *SQLiteStore) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-// Get implements Storage.
 func (s *SQLiteStore) Get(ctx context.Context, id string) (*db.Task, error) {
 	task, err := s.queries.GetTask(ctx, id)
 
@@ -61,7 +58,6 @@ func (s *SQLiteStore) Get(ctx context.Context, id string) (*db.Task, error) {
 	return &task, nil
 }
 
-// GetAll implements Storage.
 func (s *SQLiteStore) GetAll(ctx context.Context, paginationParams model.PaginationParams) ([]db.Task, error) {
 	tasks, err := s.queries.GetTasks(ctx, db.GetTasksParams{
 		Limit:  int64(paginationParams.Limit),
@@ -75,7 +71,6 @@ func (s *SQLiteStore) GetAll(ctx context.Context, paginationParams model.Paginat
 	return tasks, nil
 }
 
-// Update implements Storage.
 func (s *SQLiteStore) Update(ctx context.Context, id string, task *db.Task) (*db.Task, error) {
 	updatedTask, err := s.queries.UpdateTask(ctx, db.UpdateTaskParams{
 		ID:          id,

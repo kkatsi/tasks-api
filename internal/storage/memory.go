@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-// In-memory implementation
 type MemoryStore struct {
 	mu    sync.RWMutex
 	tasks map[string]db.Task
@@ -21,7 +20,6 @@ func NewMemoryStore() Storage {
 	}
 }
 
-// Create implements Storage.
 func (s *MemoryStore) Create(ctx context.Context, task *db.Task) (string, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -30,7 +28,6 @@ func (s *MemoryStore) Create(ctx context.Context, task *db.Task) (string, error)
 	return task.ID, nil
 }
 
-// Delete implements Storage.
 func (s *MemoryStore) Delete(ctx context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -43,7 +40,6 @@ func (s *MemoryStore) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-// Get implements Storage.
 func (s *MemoryStore) Get(ctx context.Context, id string) (*db.Task, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -56,7 +52,6 @@ func (s *MemoryStore) Get(ctx context.Context, id string) (*db.Task, error) {
 	return &task, nil
 }
 
-// GetAll implements Storage.
 func (s *MemoryStore) GetAll(ctx context.Context, paginatinonParams model.PaginationParams) ([]db.Task, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -70,7 +65,6 @@ func (s *MemoryStore) GetAll(ctx context.Context, paginatinonParams model.Pagina
 	return tasks, nil
 }
 
-// Update implements Storage.
 func (s *MemoryStore) Update(ctx context.Context, id string, task *db.Task) (*db.Task, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
