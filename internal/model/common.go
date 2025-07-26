@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"errors"
+	"net/mail"
+)
 
 type PaginationParams struct {
 	Limit  int `json:"limit"`
@@ -10,13 +13,13 @@ type PaginationParams struct {
 func (p *PaginationParams) Validate() error {
 
 	if p.Limit <= 0 {
-		return fmt.Errorf("limit must be greater than 0")
+		return errors.New("limit must be greater than 0")
 	}
 	if p.Limit > 100 {
-		return fmt.Errorf("limit cannot exceed 100")
+		return errors.New("limit cannot exceed 100")
 	}
 	if p.Offset < 0 {
-		return fmt.Errorf("offset cannot be negative")
+		return errors.New("offset cannot be negative")
 	}
 
 	return nil
@@ -32,4 +35,9 @@ func (p *PaginationParams) GetPage() int {
 		return 1
 	}
 	return (p.Offset / p.Limit) + 1
+}
+
+func IsValidEmail(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
 }

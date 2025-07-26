@@ -2,9 +2,9 @@ package storage
 
 import (
 	"context"
+	"rest-api/internal/apperrors"
 	"rest-api/internal/model"
 	"rest-api/internal/storage/db"
-	"rest-api/internal/utils"
 	"sync"
 	"time"
 )
@@ -20,7 +20,7 @@ func NewMemoryStore() Storage {
 	}
 }
 
-func (s *MemoryStore) Create(ctx context.Context, task *db.Task) (string, error) {
+func (s *MemoryStore) CreateTask(ctx context.Context, task *db.Task) (string, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -28,31 +28,31 @@ func (s *MemoryStore) Create(ctx context.Context, task *db.Task) (string, error)
 	return task.ID, nil
 }
 
-func (s *MemoryStore) Delete(ctx context.Context, id string) error {
+func (s *MemoryStore) DeleteTask(ctx context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if _, taskExists := s.tasks[id]; !taskExists {
-		return utils.ErrTaskNotFound
+		return apperrors.ErrTaskNotFound
 	}
 
 	delete(s.tasks, id)
 	return nil
 }
 
-func (s *MemoryStore) Get(ctx context.Context, id string) (*db.Task, error) {
+func (s *MemoryStore) GetTask(ctx context.Context, id string) (*db.Task, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	task, taskExists := s.tasks[id]
 	if !taskExists {
-		return nil, utils.ErrTaskNotFound
+		return nil, apperrors.ErrTaskNotFound
 	}
 
 	return &task, nil
 }
 
-func (s *MemoryStore) GetAll(ctx context.Context, paginatinonParams model.PaginationParams) ([]db.Task, error) {
+func (s *MemoryStore) GetAllTasks(ctx context.Context, paginatinonParams model.PaginationParams) ([]db.Task, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -65,12 +65,12 @@ func (s *MemoryStore) GetAll(ctx context.Context, paginatinonParams model.Pagina
 	return tasks, nil
 }
 
-func (s *MemoryStore) Update(ctx context.Context, id string, task *db.Task) (*db.Task, error) {
+func (s *MemoryStore) UpdateTask(ctx context.Context, id string, task *db.Task) (*db.Task, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if _, exists := s.tasks[id]; !exists {
-		return nil, utils.ErrTaskNotFound
+		return nil, apperrors.ErrTaskNotFound
 	}
 
 	task.CreatedAt = s.tasks[id].CreatedAt
@@ -81,4 +81,14 @@ func (s *MemoryStore) Update(ctx context.Context, id string, task *db.Task) (*db
 	updatedTask := s.tasks[id]
 
 	return &updatedTask, nil
+}
+
+//user
+
+func (s *MemoryStore) CreateUser(ctx context.Context, user *db.User) (string, error) {
+	return "", nil
+}
+
+func (s *MemoryStore) GetUserByUsername(ctx context.Context, username string) (*db.User, error) {
+	return nil, nil
 }

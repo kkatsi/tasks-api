@@ -34,11 +34,6 @@ func main() {
 		utils.JsonResponse(w, http.StatusOK, map[string]string{"status": "OK"})
 	})
 
-	//auth
-	authService := service.NewAuthService(store)
-	authHandler := handler.NewAuthHandler(authService)
-	routes.SetupAuthRoutes(mux, authHandler)
-
 	//tasks
 	taskService := service.NewTaskService(store)
 	taskHandler := handler.NewTaskHandler(taskService)
@@ -48,6 +43,11 @@ func main() {
 	userService := service.NewUserService(store)
 	userHandler := handler.NewUserHandler(userService)
 	routes.SetupUserRoutes(mux, userHandler)
+
+	//auth
+	authService := service.NewAuthService(store, userService)
+	authHandler := handler.NewAuthHandler(authService)
+	routes.SetupAuthRoutes(mux, authHandler)
 
 	// Start server
 	port := ":8080"

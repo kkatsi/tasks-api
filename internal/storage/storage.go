@@ -7,9 +7,15 @@ import (
 )
 
 type Storage interface {
-	Create(ctx context.Context, task *db.Task) (string, error)
-	Update(ctx context.Context, id string, task *db.Task) (*db.Task, error)
-	Delete(ctx context.Context, id string) error
-	Get(ctx context.Context, id string) (*db.Task, error)
-	GetAll(ctx context.Context, paginationParams model.PaginationParams) ([]db.Task, error)
+
+	//task
+	CreateTask(ctx context.Context, task *db.Task) (string, error)
+	UpdateTask(ctx context.Context, id string, task *db.Task) (*db.Task, error)
+	DeleteTask(ctx context.Context, id string) error
+	GetTask(ctx context.Context, id string) (*db.Task, error)
+	GetAllTasks(ctx context.Context, paginationParams model.PaginationParams) ([]db.Task, error)
+
+	//user
+	CreateUser(ctx context.Context, user *db.User) (string, error)
+	GetUserByUsername(ctx context.Context, username string) (*db.User, error)
 }

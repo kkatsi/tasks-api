@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
+	"rest-api/internal/apperrors"
 	"rest-api/internal/model"
 	"rest-api/internal/storage"
 	"rest-api/internal/storage/db"
-	"rest-api/internal/utils"
 	"time"
 
 	"github.com/google/uuid"
@@ -37,32 +37,36 @@ func (s *TaskService) Create(ctx context.Context, reqBody model.CreateTaskReques
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
-	return s.store.Create(ctx, &task)
+	return s.store.CreateTask(ctx, &task)
 }
 
 func (s *TaskService) Get(ctx context.Context, id string) (*db.Task, error) {
 	if err := uuid.Validate(id); err != nil {
-		return nil, utils.ErrInvalidID
+		return nil, apperrors.ErrInvalidID
 	}
-	return s.store.Get(ctx, id)
+	return s.store.GetTask(ctx, id)
 }
 
 func (s *TaskService) GetAll(ctx context.Context, paginationParams model.PaginationParams) ([]db.Task, error) {
 
-	return s.store.GetAll(ctx, paginationParams)
+	if err := paginationParams.Validate(); err != nil {
+		return nil, err
+	}
+
+	return s.store.GetAllTasks(ctx, paginationParams)
 }
 
 func (s *TaskService) Delete(ctx context.Context, id string) error {
 	if err := uuid.Validate(id); err != nil {
-		return utils.ErrInvalidID
+		return apperrors.ErrInvalidID
 	}
 
-	return s.store.Delete(ctx, id)
+	return s.store.DeleteTask(ctx, id)
 }
 
 func (s *TaskService) Update(ctx context.Context, id string, reqBody *model.UpdateTaskRequest) (*db.Task, error) {
 	if err := uuid.Validate(id); err != nil {
-		return nil, utils.ErrInvalidID
+		return nil, apperrors.ErrInvalidID
 	}
 
 	if err := reqBody.Validate(); err != nil {
@@ -77,5 +81,5 @@ func (s *TaskService) Update(ctx context.Context, id string, reqBody *model.Upda
 		UpdatedAt:   time.Now(),
 	}
 
-	return s.store.Update(ctx, id, &task)
+	return s.store.UpdateTask(ctx, id, &task)
 }

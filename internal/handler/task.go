@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"rest-api/internal/apperrors"
 	"rest-api/internal/model"
 	"rest-api/internal/service"
 	"rest-api/internal/utils"
@@ -22,11 +23,11 @@ func NewTaskHandler(service *service.TaskService) *TaskHandler {
 	}
 }
 
-func handleError(w http.ResponseWriter, err error) {
+func handleTaskError(w http.ResponseWriter, err error) {
 	switch {
-	case errors.Is(err, utils.ErrInvalidID), errors.Is(err, utils.ErrInvalidRequestBody), errors.Is(err, utils.ErrTitleIsRequired), errors.Is(err, utils.ErrDescriptionIsRequired), errors.Is(err, utils.ErrCompletedIsRequired):
+	case errors.Is(err, apperrors.ErrInvalidID), errors.Is(err, apperrors.ErrInvalidRequestBody), errors.Is(err, apperrors.ErrTitleRequired), errors.Is(err, apperrors.ErrDescriptionRequired), errors.Is(err, apperrors.ErrCompletedRequired):
 		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
-	case errors.Is(err, utils.ErrTaskNotFound):
+	case errors.Is(err, apperrors.ErrTaskNotFound):
 		utils.ErrorResponse(w, http.StatusNotFound, err.Error())
 	default:
 		utils.ErrorResponse(w, http.StatusInternalServerError, err.Error())
@@ -37,14 +38,14 @@ func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var reqBody model.CreateTaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		handleError(w, err)
+		handleTaskError(w, err)
 		return
 	}
 
 	taskId, err := h.service.Create(ctx, reqBody)
 
 	if err != nil {
-		handleError(w, err)
+		handleTaskError(w, err)
 		return
 	}
 	utils.JsonResponse(w, http.StatusCreated, map[string]string{"id": taskId})
@@ -57,7 +58,7 @@ func (h *TaskHandler) Get(w http.ResponseWriter, r *http.Request) {
 	task, err := h.service.Get(ctx, taskId)
 
 	if err != nil {
-		handleError(w, err)
+		handleTaskError(w, err)
 		return
 	}
 
@@ -89,7 +90,7 @@ func (h *TaskHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		handleError(w, err)
+		handleTaskError(w, err)
 		return
 	}
 
@@ -102,7 +103,7 @@ func (h *TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	err := h.service.Delete(ctx, taskId)
 
 	if err != nil {
-		handleError(w, err)
+		handleTaskError(w, err)
 		return
 	}
 	utils.JsonResponse(w, http.StatusNoContent, nil)
@@ -113,16 +114,16 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 	taskId := r.PathValue("id")
 	var reqBody model.UpdateTaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		utils.ErrorResponse(w, http.StatusBadRequest, utils.ErrInvalidRequestBody.Error())
+		utils.ErrorResponse(w, http.StatusBadRequest, apperrors.ErrInvalidRequestBody.Error())
 		return
 	}
 
 	task, err := h.service.Update(ctx, taskId, &reqBody)
 
 	if err != nil {
-		handleError(w, err)
+		handleTaskError(w, err)
 		return
 	}
 
-	utils.JsonResponse(w, http.StatusOK, task)
+	utils.JsonResponse(w, http.StatusOK, model.TaskToDTO(*task))
 }

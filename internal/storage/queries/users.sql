@@ -1,5 +1,8 @@
--- name: GetUser :one
+-- name: GetUserById :one
 SELECT * FROM users WHERE id = ?;
+
+-- name: GetUserByUsername :one
+SELECT * FROM users WHERE username = ?;
 
 -- name: CreateUser :one
 INSERT INTO users (id, username, email, password_hash, created_at, updated_at)

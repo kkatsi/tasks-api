@@ -1,8 +1,6 @@
 package model
 
-import (
-	"rest-api/internal/utils"
-)
+import "rest-api/internal/apperrors"
 
 type CreateTaskRequest struct {
 	Title       string `json:"title"`
@@ -30,26 +28,26 @@ type ListDTO[T any] struct {
 
 func (r *CreateTaskRequest) Validate() error {
 	if r.Title == "" {
-		return utils.ErrTitleIsRequired
+		return apperrors.ErrTitleRequired
 	}
 
 	if r.Description == "" {
-		return utils.ErrDescriptionIsRequired
+		return apperrors.ErrDescriptionRequired
 	}
 	return nil
 }
 
 func (r *UpdateTaskRequest) Validate() error {
 	if r.Title == "" {
-		return utils.ErrTitleIsRequired
+		return apperrors.ErrTitleRequired
 	}
 
 	if r.Description == "" {
-		return utils.ErrDescriptionIsRequired
+		return apperrors.ErrDescriptionRequired
 	}
 
 	if r.Completed == nil {
-		return utils.ErrCompletedIsRequired
+		return apperrors.ErrCompletedRequired
 	}
 	return nil
 }
