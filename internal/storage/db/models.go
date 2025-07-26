@@ -5,8 +5,17 @@
 package db
 
 import (
+	"database/sql"
 	"time"
 )
+
+type RefreshToken struct {
+	ID        string
+	UserID    string
+	TokenHash string
+	ExpiresAt time.Time
+	CreatedAt sql.NullTime
+}
 
 type Task struct {
 	ID          string

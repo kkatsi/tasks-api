@@ -145,3 +145,56 @@ func (s *SQLiteStore) GetUserByUsername(ctx context.Context, username string) (*
 
 	return &user, nil
 }
+
+func (s *SQLiteStore) GetUserByEmail(ctx context.Context, email string) (*db.User, error) {
+	user, err := s.queries.GetUserByEmail(ctx, email)
+
+	if err != nil {
+		var error error = err
+		if err == sql.ErrNoRows {
+			error = apperrors.ErrUserNotFound
+		}
+
+		return nil, error
+	}
+
+	return &user, nil
+}
+
+//auth
+
+func (s *SQLiteStore) GetRefreshToken(ctx context.Context, hashedRefreshToken string) (*db.RefreshToken, error) {
+	refreshToken, err := s.queries.GetRefreshToken(ctx, hashedRefreshToken)
+
+	if err != nil {
+		var error error = err
+		if err == sql.ErrNoRows {
+			error = apperrors.ErrTokenInvalid
+		}
+
+		return nil, error
+	}
+
+	return &refreshToken, nil
+}
+
+func (s *SQLiteStore) CreateRefreshTokenRecord(ctx context.Context, refreshTokenEntity db.RefreshToken) error {
+	return s.queries.CreateRefreshToken(ctx, db.CreateRefreshTokenParams{
+		ID:        refreshTokenEntity.ID,
+		UserID:    refreshTokenEntity.UserID,
+		TokenHash: refreshTokenEntity.TokenHash,
+		ExpiresAt: refreshTokenEntity.ExpiresAt,
+	})
+
+}
+
+func (s *SQLiteStore) DeleteExpiredTokens(ctx context.Context) error {
+	return nil
+}
+
+func (s *SQLiteStore) DeleteRefreshToken(ctx context.Context, userId string, hashedRefreshToken string) error {
+	return s.queries.DeleteRefreshToken(ctx, db.DeleteRefreshTokenParams{
+		TokenHash: hashedRefreshToken,
+		UserID:    userId,
+	})
+}

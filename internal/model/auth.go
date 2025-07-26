@@ -4,10 +4,34 @@ import (
 	"rest-api/internal/apperrors"
 )
 
+type TokensResponse struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+}
+
+type UserResponse struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
+type LoginResponse struct {
+	User   UserResponse   `json:"user"`
+	Tokens TokensResponse `json:"tokens"`
+}
+
 type RegisterUserRequest struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type LoginUserRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type RefreshRequest struct {
+	RefreshToken string `json:"refreshToken"`
 }
 
 func (r *RegisterUserRequest) Validate() error {

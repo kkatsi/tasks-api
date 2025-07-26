@@ -92,3 +92,25 @@ func (s *MemoryStore) CreateUser(ctx context.Context, user *db.User) (string, er
 func (s *MemoryStore) GetUserByUsername(ctx context.Context, username string) (*db.User, error) {
 	return nil, nil
 }
+
+func (s *MemoryStore) GetUserByEmail(ctx context.Context, username string) (*db.User, error) {
+	return nil, nil
+}
+
+//auth
+
+func (s *MemoryStore) GetRefreshToken(ctx context.Context, hashedRefreshToken string) (*db.RefreshToken, error) {
+	return nil, nil
+}
+
+func (s *MemoryStore) CreateRefreshTokenRecord(ctx context.Context, refreshTokenEntity db.RefreshToken) error {
+	return nil
+}
+
+func (s *MemoryStore) DeleteExpiredTokens(ctx context.Context) error {
+	return nil
+}
+
+func (s *MemoryStore) DeleteRefreshToken(ctx context.Context, userId string, hashedRefreshToken string) error {
+	return nil
+}

@@ -6,4 +6,5 @@ var (
 	ErrInvalidID          = errors.New("invalid task ID")
 	ErrInvalidRequestBody = errors.New("invalid request body")
 	ErrInvalidEmail       = errors.New("invalid email")
+	ErrInternalError      = errors.New("internal server error")
 )

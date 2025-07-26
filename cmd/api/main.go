@@ -5,16 +5,21 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"rest-api/internal/config"
 	"rest-api/internal/handler"
 	"rest-api/internal/routes"
 	"rest-api/internal/service"
 	"rest-api/internal/storage"
 	"rest-api/internal/utils"
+	"strconv"
 
+	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
+
+	config.InitConfig()
 
 	db, err := sql.Open("sqlite3", "./data.db")
 	if err != nil {
@@ -50,7 +55,8 @@ func main() {
 	routes.SetupAuthRoutes(mux, authHandler)
 
 	// Start server
-	port := ":8080"
-	fmt.Printf("Server starting on port %s...\n", port)
-	log.Fatal(http.ListenAndServe(port, mux))
+	port := config.Get().Port
+	addr := ":" + strconv.Itoa(port)
+	fmt.Printf("Server starting on port %d...\n", port)
+	log.Fatal(http.ListenAndServe(addr, mux))
 }
