@@ -5,9 +5,13 @@ import (
 	"rest-api/internal/handler"
 )
 
-func SetupUserRoutes(mux *http.ServeMux, h *handler.UserHandler) {
-	mux.HandleFunc("GET /users/me", h.GetMyUser)
-	mux.HandleFunc("DELETE /users/me", h.DeleteMyUser)
-	mux.HandleFunc("PUT /users/me", h.UpdateMyUser)
-	mux.HandleFunc("PUT /users/me/password", h.UpdateMyPassword)
+func SetupUserRoutes(mux *http.ServeMux, h *handler.UserHandler, auth func(http.HandlerFunc) http.HandlerFunc) {
+	handle := func(pattern string, handler http.HandlerFunc) {
+		mux.HandleFunc(pattern, auth(handler))
+	}
+
+	handle("GET /users/me", h.GetMyUser)
+	handle("DELETE /users/me", h.DeleteMyUser)
+	handle("PUT /users/me", h.UpdateMyUser)
+	handle("PUT /users/me/password", h.UpdateMyPassword)
 }

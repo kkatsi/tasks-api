@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"rest-api/internal/config"
 	"rest-api/internal/handler"
+	"rest-api/internal/middleware"
 	"rest-api/internal/routes"
 	"rest-api/internal/service"
 	"rest-api/internal/storage"
@@ -42,12 +43,12 @@ func main() {
 	//tasks
 	taskService := service.NewTaskService(store)
 	taskHandler := handler.NewTaskHandler(taskService)
-	routes.SetupTaskRoutes(mux, taskHandler)
+	routes.SetupTaskRoutes(mux, taskHandler, middleware.Auth)
 
 	//users
 	userService := service.NewUserService(store)
 	userHandler := handler.NewUserHandler(userService)
-	routes.SetupUserRoutes(mux, userHandler)
+	routes.SetupUserRoutes(mux, userHandler, middleware.Auth)
 
 	//auth
 	authService := service.NewAuthService(store, userService)

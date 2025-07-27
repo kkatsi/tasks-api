@@ -5,10 +5,14 @@ import (
 	"rest-api/internal/handler"
 )
 
-func SetupTaskRoutes(mux *http.ServeMux, h *handler.TaskHandler) {
-	mux.HandleFunc("GET /tasks", h.GetAll)
-	mux.HandleFunc("GET /tasks/{id}", h.Get)
-	mux.HandleFunc("POST /tasks", h.Create)
-	mux.HandleFunc("DELETE /tasks/{id}", h.Delete)
-	mux.HandleFunc("PUT /tasks/{id}", h.Update)
+func SetupTaskRoutes(mux *http.ServeMux, h *handler.TaskHandler, auth func(http.HandlerFunc) http.HandlerFunc) {
+	handle := func(pattern string, handler http.HandlerFunc) {
+		mux.HandleFunc(pattern, auth(handler))
+	}
+
+	handle("GET /tasks", h.GetAll)
+	handle("GET /tasks/{id}", h.Get)
+	handle("POST /tasks", h.Create)
+	handle("DELETE /tasks/{id}", h.Delete)
+	handle("PUT /tasks/{id}", h.Update)
 }
