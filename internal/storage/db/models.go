@@ -24,6 +24,7 @@ type Task struct {
 	Completed   bool
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	UserID      string
 }
 
 type User struct {

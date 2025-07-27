@@ -10,10 +10,10 @@ type Storage interface {
 
 	//task
 	CreateTask(ctx context.Context, task *db.Task) (string, error)
-	UpdateTask(ctx context.Context, id string, task *db.Task) (*db.Task, error)
-	DeleteTask(ctx context.Context, id string) error
-	GetTask(ctx context.Context, id string) (*db.Task, error)
-	GetAllTasks(ctx context.Context, paginationParams model.PaginationParams) ([]db.Task, error)
+	UpdateTask(ctx context.Context, task *db.Task) (*db.Task, error)
+	DeleteTask(ctx context.Context, taskId string, userId string) error
+	GetTask(ctx context.Context, taskId string, userId string) (*db.Task, error)
+	GetAllTasks(ctx context.Context, userId string, paginationParams model.PaginationParams) ([]db.Task, error)
 
 	//user
 	CreateUser(ctx context.Context, user *db.User) (string, error)

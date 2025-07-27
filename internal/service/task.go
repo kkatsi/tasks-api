@@ -29,6 +29,12 @@ func (s *TaskService) Create(ctx context.Context, reqBody model.CreateTaskReques
 		return "", err
 	}
 
+	userId, ok := ctx.Value("userId").(string)
+
+	if !ok {
+		return "", apperrors.ErrInternalError
+	}
+
 	task := db.Task{
 		ID:          uuid.NewString(),
 		Title:       reqBody.Title,
@@ -36,6 +42,7 @@ func (s *TaskService) Create(ctx context.Context, reqBody model.CreateTaskReques
 		Completed:   false,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
+		UserID:      userId,
 	}
 	return s.store.CreateTask(ctx, &task)
 }
@@ -44,7 +51,12 @@ func (s *TaskService) Get(ctx context.Context, id string) (*db.Task, error) {
 	if err := uuid.Validate(id); err != nil {
 		return nil, apperrors.ErrInvalidID
 	}
-	return s.store.GetTask(ctx, id)
+	userId, ok := ctx.Value("userId").(string)
+
+	if !ok {
+		return nil, apperrors.ErrInternalError
+	}
+	return s.store.GetTask(ctx, id, userId)
 }
 
 func (s *TaskService) GetAll(ctx context.Context, paginationParams model.PaginationParams) ([]db.Task, error) {
@@ -53,7 +65,13 @@ func (s *TaskService) GetAll(ctx context.Context, paginationParams model.Paginat
 		return nil, err
 	}
 
-	return s.store.GetAllTasks(ctx, paginationParams)
+	userId, ok := ctx.Value("userId").(string)
+
+	if !ok {
+		return nil, apperrors.ErrInternalError
+	}
+
+	return s.store.GetAllTasks(ctx, userId, paginationParams)
 }
 
 func (s *TaskService) Delete(ctx context.Context, id string) error {
@@ -61,7 +79,13 @@ func (s *TaskService) Delete(ctx context.Context, id string) error {
 		return apperrors.ErrInvalidID
 	}
 
-	return s.store.DeleteTask(ctx, id)
+	userId, ok := ctx.Value("userId").(string)
+
+	if !ok {
+		return apperrors.ErrInternalError
+	}
+
+	return s.store.DeleteTask(ctx, id, userId)
 }
 
 func (s *TaskService) Update(ctx context.Context, id string, reqBody *model.UpdateTaskRequest) (*db.Task, error) {
@@ -73,13 +97,20 @@ func (s *TaskService) Update(ctx context.Context, id string, reqBody *model.Upda
 		return nil, err
 	}
 
+	userId, ok := ctx.Value("userId").(string)
+
+	if !ok {
+		return nil, apperrors.ErrInternalError
+	}
+
 	task := db.Task{
 		ID:          id,
 		Title:       reqBody.Title,
 		Description: reqBody.Description,
 		Completed:   *reqBody.Completed,
 		UpdatedAt:   time.Now(),
+		UserID:      userId,
 	}
 
-	return s.store.UpdateTask(ctx, id, &task)
+	return s.store.UpdateTask(ctx, &task)
 }

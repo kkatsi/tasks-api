@@ -28,6 +28,11 @@ func main() {
 	}
 	defer db.Close()
 
+	_, err = db.Exec("PRAGMA foreign_keys = ON")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if err := db.Ping(); err != nil {
 		log.Fatal("Failed to ping database:", err)
 	}

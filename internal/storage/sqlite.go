@@ -31,6 +31,7 @@ func (s *SQLiteStore) CreateTask(ctx context.Context, task *db.Task) (string, er
 		Completed:   task.Completed,
 		CreatedAt:   task.CreatedAt,
 		UpdatedAt:   task.UpdatedAt,
+		UserID:      task.UserID,
 	})
 
 	if err != nil {
@@ -40,8 +41,11 @@ func (s *SQLiteStore) CreateTask(ctx context.Context, task *db.Task) (string, er
 	return createdTask.ID, nil
 }
 
-func (s *SQLiteStore) DeleteTask(ctx context.Context, id string) error {
-	_, err := s.queries.DeleteTask(ctx, id)
+func (s *SQLiteStore) DeleteTask(ctx context.Context, taskId string, userId string) error {
+	_, err := s.queries.DeleteTask(ctx, db.DeleteTaskParams{
+		ID:     taskId,
+		UserID: userId,
+	})
 
 	if err != nil {
 		var error error = errors.New("internal server error")
@@ -54,8 +58,11 @@ func (s *SQLiteStore) DeleteTask(ctx context.Context, id string) error {
 	return nil
 }
 
-func (s *SQLiteStore) GetTask(ctx context.Context, id string) (*db.Task, error) {
-	task, err := s.queries.GetTask(ctx, id)
+func (s *SQLiteStore) GetTask(ctx context.Context, taskId string, userId string) (*db.Task, error) {
+	task, err := s.queries.GetTask(ctx, db.GetTaskParams{
+		ID:     taskId,
+		UserID: userId,
+	})
 
 	if err != nil {
 		var error error = err
@@ -69,8 +76,9 @@ func (s *SQLiteStore) GetTask(ctx context.Context, id string) (*db.Task, error) 
 	return &task, nil
 }
 
-func (s *SQLiteStore) GetAllTasks(ctx context.Context, paginationParams model.PaginationParams) ([]db.Task, error) {
+func (s *SQLiteStore) GetAllTasks(ctx context.Context, userId string, paginationParams model.PaginationParams) ([]db.Task, error) {
 	tasks, err := s.queries.GetTasks(ctx, db.GetTasksParams{
+		UserID: userId,
 		Limit:  int64(paginationParams.Limit),
 		Offset: int64(paginationParams.Offset),
 	})
@@ -82,13 +90,14 @@ func (s *SQLiteStore) GetAllTasks(ctx context.Context, paginationParams model.Pa
 	return tasks, nil
 }
 
-func (s *SQLiteStore) UpdateTask(ctx context.Context, id string, task *db.Task) (*db.Task, error) {
+func (s *SQLiteStore) UpdateTask(ctx context.Context, task *db.Task) (*db.Task, error) {
 	updatedTask, err := s.queries.UpdateTask(ctx, db.UpdateTaskParams{
-		ID:          id,
+		ID:          task.ID,
 		Title:       task.Title,
 		Description: task.Description,
 		Completed:   task.Completed,
 		UpdatedAt:   time.Now(),
+		UserID:      task.UserID,
 	})
 
 	if err != nil {
