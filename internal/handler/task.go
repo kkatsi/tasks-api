@@ -62,7 +62,7 @@ func (h *TaskHandler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.JsonResponse(w, http.StatusOK, model.TaskToDTO(*task))
+	utils.JsonResponse(w, http.StatusOK, model.TaskToTaskResponse(*task))
 }
 
 func (h *TaskHandler) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -94,7 +94,7 @@ func (h *TaskHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.JsonResponse(w, http.StatusOK, model.TasksToListDTO(tasks))
+	utils.JsonResponse(w, http.StatusOK, model.TasksToList(tasks))
 }
 
 func (h *TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -125,5 +125,5 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.JsonResponse(w, http.StatusOK, model.TaskToDTO(*task))
+	utils.JsonResponse(w, http.StatusOK, model.TaskToTaskResponse(*task))
 }

@@ -113,25 +113,19 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
-SET email = ?, username = ?, updated_at = ?
+SET email = ?, username = ?
 WHERE id = ?
 RETURNING id, username, email, password_hash, created_at, updated_at
 `
 
 type UpdateUserParams struct {
-	Email     string
-	Username  string
-	UpdatedAt time.Time
-	ID        string
+	Email    string
+	Username string
+	ID       string
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUser,
-		arg.Email,
-		arg.Username,
-		arg.UpdatedAt,
-		arg.ID,
-	)
+	row := q.db.QueryRowContext(ctx, updateUser, arg.Email, arg.Username, arg.ID)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -146,19 +140,18 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 
 const updateUserPassword = `-- name: UpdateUserPassword :one
 UPDATE users
-SET password_hash = ?, updated_at = ?
+SET password_hash = ?
 WHERE id = ?
 RETURNING id, username, email, password_hash, created_at, updated_at
 `
 
 type UpdateUserPasswordParams struct {
 	PasswordHash string
-	UpdatedAt    time.Time
 	ID           string
 }
 
 func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUserPassword, arg.PasswordHash, arg.UpdatedAt, arg.ID)
+	row := q.db.QueryRowContext(ctx, updateUserPassword, arg.PasswordHash, arg.ID)
 	var i User
 	err := row.Scan(
 		&i.ID,

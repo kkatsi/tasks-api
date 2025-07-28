@@ -140,8 +140,8 @@ func (s *SQLiteStore) CreateUser(ctx context.Context, user *db.User) (string, er
 	return createdUser.ID, nil
 }
 
-func (s *SQLiteStore) GetUserByUsername(ctx context.Context, username string) (*db.User, error) {
-	user, err := s.queries.GetUserByUsername(ctx, username)
+func (s *SQLiteStore) GetUserById(ctx context.Context, id string) (*db.User, error) {
+	user, err := s.queries.GetUserById(ctx, id)
 
 	if err != nil {
 		var error error = err
@@ -168,6 +168,73 @@ func (s *SQLiteStore) GetUserByEmail(ctx context.Context, email string) (*db.Use
 	}
 
 	return &user, nil
+}
+
+func (s *SQLiteStore) GetUserByUsername(ctx context.Context, username string) (*db.User, error) {
+	user, err := s.queries.GetUserByUsername(ctx, username)
+
+	if err != nil {
+		var error error = err
+		if err == sql.ErrNoRows {
+			error = apperrors.ErrUserNotFound
+		}
+
+		return nil, error
+	}
+
+	return &user, nil
+}
+
+func (s *SQLiteStore) DeleteUser(ctx context.Context, id string) error {
+	_, err := s.queries.DeleteUser(ctx, id)
+
+	if err != nil {
+		var error error = err
+		if err == sql.ErrNoRows {
+			error = apperrors.ErrUserNotFound
+		}
+
+		return error
+	}
+
+	return nil
+}
+
+func (s *SQLiteStore) UpdateUser(ctx context.Context, user *db.User) (*db.User, error) {
+	updatedUser, err := s.queries.UpdateUser(ctx, db.UpdateUserParams{
+		ID:       user.ID,
+		Email:    user.Email,
+		Username: user.Username,
+	})
+
+	if err != nil {
+		var error error = err
+		if err == sql.ErrNoRows {
+			error = apperrors.ErrUserNotFound
+		}
+
+		return nil, error
+	}
+
+	return &updatedUser, nil
+}
+
+func (s *SQLiteStore) UpdatePassword(ctx context.Context, userId string, hashedPassword string) error {
+	_, err := s.queries.UpdateUserPassword(ctx, db.UpdateUserPasswordParams{
+		ID:           userId,
+		PasswordHash: hashedPassword,
+	})
+
+	if err != nil {
+		var error error = err
+		if err == sql.ErrNoRows {
+			error = apperrors.ErrUserNotFound
+		}
+
+		return error
+	}
+
+	return nil
 }
 
 //auth

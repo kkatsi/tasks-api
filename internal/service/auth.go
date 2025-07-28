@@ -150,6 +150,7 @@ func (s *AuthService) Login(ctx context.Context, reqBody *model.LoginUserRequest
 
 	return &model.LoginResponse{
 		User: model.UserResponse{
+			ID:       user.ID,
 			Username: user.Username,
 			Email:    user.Email,
 		},

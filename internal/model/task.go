@@ -13,14 +13,14 @@ type UpdateTaskRequest struct {
 	Completed   *bool  `json:"completed"`
 }
 
-type GetTaskDTO struct {
+type TaskResponse struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Completed   *bool  `json:"completed"`
 }
 
-type ListDTO[T any] struct {
+type TasksResponse[T any] struct {
 	Data  []T `json:"data"`
 	Total int `json:"total"`
 	Pages int `json:"pages"`

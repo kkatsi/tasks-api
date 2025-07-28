@@ -9,11 +9,6 @@ type TokensResponse struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
-type UserResponse struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-}
-
 type LoginResponse struct {
 	User   UserResponse   `json:"user"`
 	Tokens TokensResponse `json:"tokens"`
